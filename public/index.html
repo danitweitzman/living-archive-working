@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Shape of Ideas</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>The Shape of Ideas</h1>
+    <form id="journalForm">
+      <textarea
+        id="journalInput"
+        rows="10"
+        cols="50"
+        placeholder="Enter your idea here..."
+      ></textarea>
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="journalOutput"></div>
+
+    <script>
+      document.getElementById("journalForm").addEventListener(
+        "submit",
+        async function (e) {
+          e.preventDefault();
+          const journalEntry = document.getElementById("journalInput").value;
+
+          try {
+            const response = await fetch("/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ journal: journalEntry }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+            document.getElementById("journalOutput").innerText =
+              data.emotionalAnalysis;
+          } catch (error) {
+            console.error("Error submitting journal entry:", error);
+            document.getElementById("journalOutput").innerText =
+              "There was an error processing your entry.";
+          }
+        },
+      );
+    </script>
+  </body>
+</html>
