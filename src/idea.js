@@ -4,9 +4,8 @@ import { promptGPT } from "./shared/openai.ts";
 
 const app = new Application();
 const router = new Router();
-const kv = await Deno.openKv(); // Open the Deno KV database
+const kv = await Deno.openKv();
 
-// Helper function to fetch all clusters
 async function getAllClusters() {
     const clusters = kv.list({ prefix: ["clusters"] });
     const results = [];
@@ -16,13 +15,11 @@ async function getAllClusters() {
     return results;
 }
 
-// Helper function to save a cluster
 async function saveCluster(clusterId, clusterData) {
     const clusterKey = ["clusters", clusterId];
     await kv.set(clusterKey, clusterData);
 }
 
-// Route to submit a journal idea
 router.post("/submit", async (context) => {
     try {
         const body = context.request.body({ type: "json" });
@@ -57,11 +54,9 @@ router.post("/submit", async (context) => {
         }
 
         if (matchedCluster) {
-            // Add the new idea to the matching cluster
             matchedCluster.ideas.push(newIdea);
             await saveCluster(matchedCluster.id, matchedCluster);
         } else {
-            // Create a new cluster if no match is found
             const clusterId = crypto.randomUUID();
             const newCluster = {
                 id: clusterId,
@@ -71,7 +66,6 @@ router.post("/submit", async (context) => {
             await saveCluster(clusterId, newCluster);
         }
 
-        // Fetch updated clusters and return to the client
         const updatedClusters = await getAllClusters();
         context.response.body = {
             message: "Idea submitted and processed",
@@ -79,14 +73,13 @@ router.post("/submit", async (context) => {
         };
     } catch (error) {
         console.error("Error handling submit request:", error);
-        context.response.status = 400; // Bad request
+        context.response.status = 400;
         context.response.body = {
             error: error.message || "Failed to process the request.",
         };
     }
 });
 
-// Route to clear all clusters
 router.post("/clear", async (context) => {
     try {
         const clusters = kv.list({ prefix: ["clusters"] });
@@ -99,18 +92,16 @@ router.post("/clear", async (context) => {
         };
     } catch (error) {
         console.error("Error clearing clusters:", error);
-        context.response.status = 500; // Internal Server Error
+        context.response.status = 500;
         context.response.body = {
             error: "Failed to clear clusters.",
         };
     }
 });
 
-// Middleware for serving static files and handling routes
 app.use(router.routes());
 app.use(router.allowedMethods());
 app.use(staticServer);
 
-// Start the server
 console.log("\nListening on http://localhost:8000");
 await app.listen({ port: 8000, signal: createExitSignal() });
