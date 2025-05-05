@@ -96,6 +96,10 @@ router.post("/embed-cluster", async (ctx) => {
                 }),
             });
             const json = await res.json();
+            if (!json.data || !json.data[0]?.embedding) {
+                console.error("OpenAI Embedding Error:", json);
+                throw new Error("Failed to fetch embedding");
+            }
             return json.data[0].embedding;
         }),
     );
