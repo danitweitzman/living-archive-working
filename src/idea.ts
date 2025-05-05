@@ -5,7 +5,8 @@ import { promptGPT } from "./shared/openai.ts";
 import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
 import { kmeans } from "./shared/kmeans.ts";
 
-const { OPENAI_API_KEY } = await load();
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+if (!OPENAI_API_KEY) throw new Error("Missing OPENAI_API_KEY");
 const app = new Application();
 const router = new Router();
 
@@ -208,3 +209,4 @@ async function findIdeaConnections(
         .filter((i) => !isNaN(i) && i >= 0 && i < clusters.length);
     return indices.map((i) => clusters[i]);
 }
+// const { OPENAI_API_KEY } = await load();
