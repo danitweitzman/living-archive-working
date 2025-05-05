@@ -1,32 +1,37 @@
 import * as log from "./logger.ts";
+import { Context } from "https://deno.land/x/oak@v12.6.1/context.ts";
+import { type Next } from "https://deno.land/x/oak@v12.6.1/middleware.ts";
 
-import { Context } from "https://deno.land/x/oak@14.2.0/context.ts";
-import { type Next } from "https://deno.land/x/oak@14.2.0/middleware.ts";
-
-// Serve static files from public directory
+// Static file server for Deno
 export async function staticServer(context: Context, next: Next) {
   try {
-    await context.send({
-      root: `${Deno.cwd()}/public`,
-      index: "index.html",
-    });
-  } catch {
+    context.response.headers.set(
+      "Cache-Control",
+      "no-cache, no-store, must-revalidate",
+    );
+    context.response.headers.set("Pragma", "no-cache");
+    context.response.headers.set("Expires", "0");
+
+    const pathname = context.request.url.pathname;
+    const root = `${Deno.cwd()}/public`;
+
+    if (pathname === "/" || pathname === "") {
+      await context.send({ root, path: "indexx.html" });
+    } else {
+      await context.send({ root, path: pathname.slice(1) });
+    }
+  } catch (error) {
+    console.error("Static file error:", error);
     await next();
   }
 }
 
 export function createExitSignal() {
   const exitController = new AbortController();
-  Deno.addSignalListener(
-    "SIGINT",
-    function onSigInt() {
-      log.warn("Received SIGINT, sending abort signal.");
-      exitController.abort();
-      log.warn("Exiting");
-      Deno.exit();
-      return false;
-    },
-  );
-
+  Deno.addSignalListener("SIGINT", () => {
+    log.warn("Received SIGINT, exiting.");
+    exitController.abort();
+    Deno.exit();
+  });
   return exitController.signal;
 }

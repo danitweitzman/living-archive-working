@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shape of Ideas</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Shape of Ideas</h1>
+      <form id="journalForm">
+        <textarea
+          id="journalInput"
+          placeholder="What's on your mind?"
+          rows="1"
+        ></textarea>
+        <button type="submit" style="display: none">Submit</button>
+      </form>
+      <div id="fileDropZone" class="drop-zone">
+        <p>📄 Drag & drop PDF or TXT files here</p>
+      </div>
+      <button id="clearHistory">Clear History</button>
+    </div>
+    <div id="visualization"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

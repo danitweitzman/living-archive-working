@@ -1,11 +1,17 @@
 {
     "tasks": {
-        "start": "deno run --unstable --unstable-kv --allow-env --allow-net --allow-read ./src/idea.js"
+        "start": "deno run --unstable --unstable-kv --allow-env --allow-net --allow-read --allow-write ./src/idea.ts"
     },
     "permissions": {
         "unstable": true,
         "env": true,
         "net": true,
-        "read": true
+        "read": true,
+        "write": true
+    },
+    "imports": {
+        "oak": "https://deno.land/x/oak@v12.6.1/mod.ts",
+        "kmeans": "https://deno.land/x/kmeans@v1.1.1/mod.ts",
+        "dotenv": "https://deno.land/std@0.224.0/dotenv/mod.ts"
     }
 }
