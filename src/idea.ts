@@ -16,7 +16,7 @@ interface Cluster {
     ideas: string[];
 }
 
-let kv: Deno.Kv = await Deno.openKv();
+let kv = await Deno.openKv(); // no path!
 
 // Middleware
 app.use(async (ctx, next) => {
